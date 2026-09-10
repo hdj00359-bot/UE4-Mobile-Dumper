@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+android {
+    namespace 'com.bizzra.dumper'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.bizzra.dumper'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path file('src/main/jni/Android.mk')
+        }
+    }
+
+    ndkVersion '25.1.8937393'
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+}
+
+tasks.register('packageReleaseSoDex', Zip) {
+    dependsOn 'assembleRelease'
+    archiveFileName = "ue4-dumper-${android.defaultConfig.versionName}-so-dex.zip"
+    destinationDirectory = layout.buildDirectory.dir('outputs/so-dex')
+    from(zipTree("${buildDir}/outputs/apk/release/app-release.apk")) {
+        include 'classes*.dex'
+        include 'lib/**'
+    }
+}

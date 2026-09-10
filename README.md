@@ -34,6 +34,16 @@ Unlike traditional dumpers, this tool **does NOT require root access**. It can b
 
 ## 🛠️ Build Instructions
 
+### AIDE Pro
+
+This project uses the AIDE-friendly Gradle setup: Groovy build files, AGP 8.2.2,
+Gradle 8.2, Java 17, compileSdk 34, and NDK 25.1.8937393. In AIDE, import the
+project root, install/select the matching Android SDK and NDK packages, then run
+the `assembleRelease` task.
+
+If AIDE does not provide NDK support, it can build the Kotlin/Android part only;
+the `libDumper.so` still must be built with an Android NDK environment.
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/AscarreX/UE4-Mobile-Dumper.git
