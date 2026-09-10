@@ -34,8 +34,10 @@ class MainActivity : Activity() {
         }
 
         if (!dumperStarted) {
-            dumperStarted = true
-            DumperCore.Start(this)
+            if (DumperCore.Start(this)) {
+                dumperStarted = true
+                startService(Intent(this, FloatingService::class.java))
+            }
         }
     }
 }

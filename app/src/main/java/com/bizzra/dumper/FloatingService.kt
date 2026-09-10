@@ -81,7 +81,11 @@ class FloatingService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         if (rootFrame != null) {
-            windowManager?.removeView(rootFrame)
+            try {
+                windowManager?.removeView(rootFrame)
+            } catch (_: IllegalArgumentException) {
+                // The window may already have been removed by the system.
+            }
         }
 
         CloseThreads()

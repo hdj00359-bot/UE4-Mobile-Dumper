@@ -109,5 +109,4 @@ void CheckPermissionStartOverlay(JNIEnv *env, jobject ctx) {
     sleep(1);
     MakeToast(env, ctx, "Made By Ascarre", 1);
     SetDumpLocation(env, ctx);
-    startService(env, ctx, "com/bizzra/dumper/FloatingService");
 };
