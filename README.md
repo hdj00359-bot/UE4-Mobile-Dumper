@@ -70,7 +70,8 @@ The bundle is generated at
 and `classes*.dex` files into the target APK according to the APK injector's
 layout rules.
 
-The target game must load the injected library and invoke the Android entry code;
+The APK now includes ARM and Intel Android ABIs (`arm64-v8a`, `armeabi-v7a`, `x86`,
+and `x86_64`). The target game must load the injected library and invoke the Android entry code;
 an independently installed dumper APK cannot access another application's memory.
 
 ---

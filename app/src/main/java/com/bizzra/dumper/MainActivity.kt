@@ -9,6 +9,7 @@ import android.provider.Settings
 class MainActivity : Activity() {
 
     private var dumperStarted = false
+    private var permissionScreenOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +25,8 @@ class MainActivity : Activity() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
             !Settings.canDrawOverlays(this)
         ) {
+            if (permissionScreenOpen) return
+            permissionScreenOpen = true
             startActivity(
                 Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -33,6 +36,7 @@ class MainActivity : Activity() {
             return
         }
 
+        permissionScreenOpen = false
         if (!dumperStarted) {
             if (DumperCore.Start(this)) {
                 dumperStarted = true

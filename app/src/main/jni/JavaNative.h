@@ -96,17 +96,5 @@ void SetDumpLocation(JNIEnv *env, jobject ctx) {
 }
 
 void CheckPermissionStartOverlay(JNIEnv *env, jobject ctx) {
-    int sdkVer = GetApiVersion(env);
-    if (sdkVer >= 23) {
-        jclass Settings = env->FindClass("android/provider/Settings");
-        jmethodID canDraw = env->GetStaticMethodID(Settings, "canDrawOverlays","(Landroid/content/Context;)Z");
-        if (!env->CallStaticBooleanMethod(Settings, canDraw, ctx)) {
-            MakeToast(env, ctx, "Please Give Overlay Permission to start Mod Menu", 1);
-            startActivityPermission(env, ctx);
-            return;
-        }
-    }
-    sleep(1);
-    MakeToast(env, ctx, "Made By Ascarre", 1);
     SetDumpLocation(env, ctx);
 };

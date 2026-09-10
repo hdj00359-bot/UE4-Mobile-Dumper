@@ -7,6 +7,7 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.IBinder
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
@@ -94,17 +95,31 @@ class FloatingService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        setupRootContainers()
-        setupExpandedMenuContainer()
-        val wView = createMenuIcon()
-        val titleText = createTitleContainer()
-        val heading = createSubTitleText()
-        setupFeatureScrollLayout()
-        val bottomButtons = createBottomButtons()
-        setupWindowParameters()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Toast.makeText(this, "请先授予悬浮窗权限", Toast.LENGTH_LONG).show()
+            stopSelf()
+            return
+        }
 
-        assembleMenuViews(wView, titleText, heading, bottomButtons)
-        loadFeatures()
+        try {
+            setupRootContainers()
+            setupExpandedMenuContainer()
+            val wView = createMenuIcon()
+            val titleText = createTitleContainer()
+            val heading = createSubTitleText()
+            setupFeatureScrollLayout()
+            val bottomButtons = createBottomButtons()
+            setupWindowParameters()
+
+            assembleMenuViews(wView, titleText, heading, bottomButtons)
+            loadFeatures()
+        } catch (_: UnsatisfiedLinkError) {
+            Toast.makeText(this, "native 库未正确加载", Toast.LENGTH_LONG).show()
+            stopSelf()
+        } catch (_: RuntimeException) {
+            Toast.makeText(this, "悬浮菜单初始化失败，请查看 Logcat", Toast.LENGTH_LONG).show()
+            stopSelf()
+        }
     }
 
     private fun toggleMenuFocus(isFocusable: Boolean) {
@@ -305,7 +320,11 @@ class FloatingService : Service() {
         windowParams = WindowManager.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) 2038 else 2002,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            } else {
+                WindowManager.LayoutParams.TYPE_PHONE
+            },
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         )
