@@ -43,3 +43,14 @@ android {
 }
 
 dependencies {}
+
+tasks.register<Zip>("packageReleaseSoDex") {
+    dependsOn("assembleRelease")
+    archiveFileName.set("ue4-dumper-${android.defaultConfig.versionName ?: "unknown"}-so-dex.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("outputs/so-dex"))
+
+    from(zipTree(layout.buildDirectory.file("outputs/apk/release/app-release.apk"))) {
+        include("classes*.dex")
+        include("lib/**")
+    }
+}

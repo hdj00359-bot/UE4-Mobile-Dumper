@@ -103,9 +103,7 @@ void CheckPermissionStartOverlay(JNIEnv *env, jobject ctx) {
         if (!env->CallStaticBooleanMethod(Settings, canDraw, ctx)) {
             MakeToast(env, ctx, "Please Give Overlay Permission to start Mod Menu", 1);
             startActivityPermission(env, ctx);
-
-            sleep(1);
-            exit(0);
+            return;
         }
     }
     sleep(1);

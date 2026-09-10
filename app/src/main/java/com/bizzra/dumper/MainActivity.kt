@@ -1,13 +1,41 @@
 package com.bizzra.dumper
 
 import android.app.Activity
-import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 
 class MainActivity : Activity() {
 
+    private var dumperStarted = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DumperCore.CheckOverlayPermission(this)
+        requestOverlayPermissionOrStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestOverlayPermissionOrStart()
+    }
+
+    private fun requestOverlayPermissionOrStart() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
+            !Settings.canDrawOverlays(this)
+        ) {
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+            )
+            return
+        }
+
+        if (!dumperStarted) {
+            dumperStarted = true
+            DumperCore.Start(this)
+        }
     }
 }

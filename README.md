@@ -40,25 +40,38 @@ git clone https://github.com/AscarreX/UE4-Mobile-Dumper.git
 cd UE4-Mobile-Dumper
 ```
 
-2. Build using Android Studio
+2. Build the standalone APK:
+```bash
+./gradlew :app:assembleRelease
+```
 
-3. Output will be generated in `app/src/main/jni/libs`
+The APK is generated at `app/build/outputs/apk/release/app-release.apk`. Install it
+on a non-root device, grant the overlay permission, and start it before using the
+floating menu.
 
-4. Copy the libs and Dex generated and put in target Game
+To get an injection bundle containing every Dex file and both configured native
+ABIs, run:
+```bash
+./gradlew :app:packageReleaseSoDex
+```
 
-5. Make sure to put the Main Activity start code to actually start the menu.
+The bundle is generated at
+`app/build/outputs/so-dex/ue4-dumper-1.0-so-dex.zip`. Extract its `lib/<abi>/libDumper.so`
+and `classes*.dex` files into the target APK according to the APK injector's
+layout rules.
 
-Note - You only need to run the start and no need to load the library seperately
+The target game must load the injected library and invoke the Android entry code;
+an independently installed dumper APK cannot access another application's memory.
 
 ---
 
 ## 🚀 Usage (Injection Method)
 
-1. Inject the compiled `.so` into the target APK
-2. Load the library (JNI or manual injection)
-3. Launch the game
-4. Open the **floating window overlay**
-5. Use the UI to:
+1. Inject the release `classes*.dex` and the matching ABI `libDumper.so` into the target APK.
+2. Add the dumper startup call to the target application's Activity, or use the injector's JNI/Dex entry hook.
+3. Rebuild, sign, and install the modified game APK.
+4. Grant overlay permission to the modified game and launch it.
+5. Open the **floating window overlay** and use the UI to:
     - Dump SDK
     - Dump strings
     - Dump objects
